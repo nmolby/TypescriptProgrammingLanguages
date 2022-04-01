@@ -1,27 +1,24 @@
 "use strict";
-exports.__esModule = true;
-var rectangles_js_1 = require("./rectangles.js");
 function calculateFib() {
-    var element = document.getElementById("fib");
-    var fibToCalculate = parseInt(element.value);
-    var elementToChange = document.getElementById("fibResult");
+    const element = document.getElementById("fib");
+    let fibToCalculate = parseInt(element.value);
+    const elementToChange = document.getElementById("fibResult");
     elementToChange.innerHTML = fib(fibToCalculate).toString();
 }
 function rectangleHelper() {
-    var element = document.getElementById("rect");
+    const element = document.getElementById("rect");
     var coordStrings = element.value.split(';');
     console.log(coordStrings);
     var coords = [];
-    for (var _i = 0, coordStrings_1 = coordStrings; _i < coordStrings_1.length; _i++) {
-        var coordString = coordStrings_1[_i];
-        var sides = coordString.split(',');
+    for (let coordString of coordStrings) {
+        let sides = coordString.split(',');
         console.log(sides);
-        var leftSide = parseInt(sides[0].substring(1));
-        var rightSide = parseInt(sides[1].substring(0, sides[1].length - 1));
+        let leftSide = parseInt(sides[0].substring(1));
+        let rightSide = parseInt(sides[1].substring(0, sides[1].length - 1));
         coords.push([leftSide, rightSide]);
     }
-    var rectangleResult = (0, rectangles_js_1.getRectangles)(coords);
-    var elementToChange = document.getElementById("rectResult");
+    let rectangleResult = getRectangles(coords);
+    const elementToChange = document.getElementById("rectResult");
     elementToChange.innerHTML = rectangleResult.toString();
 }
 function fib(x) {
@@ -37,4 +34,34 @@ function fib(x) {
     else {
         return fib(x - 1) + fib(x - 2);
     }
+}
+function getRectangles(coords) {
+    let coordTable = createCoordTable(coords);
+    return getRectangleHelper(coords, coordTable);
+}
+function getRectangleHelper(coords, table) {
+    var rectangles = [];
+    for (let coord1 of coords) {
+        for (let coord2 of coords) {
+            //if the second coordinate is in the top right quadrant of the first cooordinate
+            if (coord2[1] > coord1[1] && coord2[0] > coord1[0]) {
+                let topLeft = [coord1[0], coord2[1]];
+                let bottomRight = [coord2[0], coord1[1]];
+                if (getHash(topLeft) in table && getHash(bottomRight)) {
+                    rectangles.push([coord1, topLeft, coord2, bottomRight]);
+                }
+            }
+        }
+    }
+    return rectangles;
+}
+function createCoordTable(coords) {
+    var table = {};
+    for (let coord of coords) {
+        table[getHash(coord)] = true;
+    }
+    return table;
+}
+function getHash(coord) {
+    return `${coord[0]}-${coord[1]}`;
 }

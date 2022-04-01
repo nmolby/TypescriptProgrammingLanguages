@@ -1,21 +1,19 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRectangles = void 0;
 function getRectangles(coords) {
-    var coordTable = createCoordTable(coords);
+    let coordTable = createCoordTable(coords);
     return getRectangleHelper(coords, coordTable);
 }
 exports.getRectangles = getRectangles;
 function getRectangleHelper(coords, table) {
     var rectangles = [];
-    for (var _i = 0, coords_1 = coords; _i < coords_1.length; _i++) {
-        var coord1 = coords_1[_i];
-        for (var _a = 0, coords_2 = coords; _a < coords_2.length; _a++) {
-            var coord2 = coords_2[_a];
+    for (let coord1 of coords) {
+        for (let coord2 of coords) {
             //if the second coordinate is in the top right quadrant of the first cooordinate
             if (coord2[1] > coord1[1] && coord2[0] > coord1[0]) {
-                var topLeft = [coord1[0], coord2[1]];
-                var bottomRight = [coord2[0], coord1[1]];
+                let topLeft = [coord1[0], coord2[1]];
+                let bottomRight = [coord2[0], coord1[1]];
                 if (getHash(topLeft) in table && getHash(bottomRight)) {
                     rectangles.push([coord1, topLeft, coord2, bottomRight]);
                 }
@@ -26,12 +24,11 @@ function getRectangleHelper(coords, table) {
 }
 function createCoordTable(coords) {
     var table = {};
-    for (var _i = 0, coords_3 = coords; _i < coords_3.length; _i++) {
-        var coord = coords_3[_i];
+    for (let coord of coords) {
         table[getHash(coord)] = true;
     }
     return table;
 }
 function getHash(coord) {
-    return "".concat(coord[0], "-").concat(coord[1]);
+    return `${coord[0]}-${coord[1]}`;
 }
