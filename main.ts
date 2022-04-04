@@ -21,7 +21,44 @@ function rectangleHelper() {
 
     let rectangleResult = getRectangles(coords)
     const elementToChange = document.getElementById("rectResult")
-    elementToChange!.innerHTML = rectangleResult.toString()
+    elementToChange!.innerHTML = rectangleResult.reduce((prevVal, currentVal) => prevVal + "<br>" + currentVal.toString(), "")
+}
+
+function linkedListHelper() {
+    const listElement = <HTMLInputElement> document.getElementById("list");
+    const amountElement = <HTMLInputElement> document.getElementById("amount");
+    var list = listElement.value.split(',')
+    var amount = Number(amountElement.value)
+    var linkedList = generateLinkedList(list)
+    var shiftedLinkedList = shiftLinkedList(linkedList, amount)
+    const elementToChange = document.getElementById("listResult")
+    elementToChange!.innerHTML = linkedListToString(shiftedLinkedList)
+}
+
+function linkedListToString(linkedList: linkedListNode, currentSring: string = ""): string {
+    var newString: string
+    if(currentSring != "") {
+        newString = currentSring + "," + linkedList.value
+    } else {
+        newString = linkedList.value.toString()
+    }
+
+    if(linkedList.nextNode != undefined) {
+        return linkedListToString(linkedList.nextNode, newString)
+    } else {
+        return newString
+    }
+}
+
+function generateLinkedList(list: string[]): linkedListNode {
+    let head = new linkedListNode(Number(list[0]))
+    let lastValue = head
+    for(let i = 1; i < list.length; i++) {
+        let newValue = new linkedListNode(Number(list[i]))
+        lastValue.nextNode = newValue
+        lastValue = newValue
+    }
+    return head
 }
 
 function fib(x: number): number {
@@ -38,14 +75,57 @@ function fib(x: number): number {
 
 
 type coord = [number, number];
-type rectangle = [coord, coord, coord, coord]
+class rectangle {
+    constructor(coords: [coord, coord, coord, coord]) {
+        this.coords = coords
+    }
+
+    coords: [coord, coord, coord, coord]
+
+    public toString = () : string => {
+        return `[${this.coords[0]}],[${this.coords[1]}],[${this.coords[2]}],[${this.coords[3]}]`;
+    }
+}
+
+class linkedListNode {
+    value: number
+    nextNode?: linkedListNode
+    constructor(value: number, nextNode?: linkedListNode) {
+        this.value = value
+        this.nextNode = nextNode
+    }
+}
 
 type coordTable = {
     [key: string]: boolean;
 }
- function getRectangles(coords: coord[]): rectangle[] {
+
+function getRectangles(coords: coord[]): rectangle[] {
     let coordTable = createCoordTable(coords)
     return getRectangleHelper(coords, coordTable)
+}
+
+function shiftLinkedList(head: linkedListNode, amount: number): linkedListNode {
+    let length = 1;
+    let tailNode = head;
+    while(tailNode.nextNode != undefined) {
+        length += 1
+        tailNode = tailNode.nextNode
+    }
+    
+    let offset = Math.abs(amount) % length
+    if (offset == 0) return head
+
+    let newTailIdx = length - offset - 1
+
+    let newTail = head
+    for(let i = 0; i < newTailIdx; i++) {
+        newTail = newTail.nextNode!
+    }
+    let nodeToReturn = newTail.nextNode!
+    newTail.nextNode = undefined
+    tailNode.nextNode = head
+    return nodeToReturn
 }
 
 function getRectangleHelper(coords: coord[], table: coordTable): rectangle[] {
@@ -58,7 +138,7 @@ function getRectangleHelper(coords: coord[], table: coordTable): rectangle[] {
                 let topLeft: coord = [coord1[0], coord2[1]]
                 let bottomRight: coord = [coord2[0], coord1[1]]
                 if(getHash(topLeft) in table && getHash(bottomRight)) {
-                    rectangles.push([coord1, topLeft, coord2, bottomRight])
+                    rectangles.push(new rectangle([coord1, topLeft, coord2, bottomRight]))
                 }
             }
         }
