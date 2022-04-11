@@ -1,3 +1,57 @@
+function fib(x: number): number {
+    if(x == 0) {
+        return 0
+    } else if (x == 1) {
+        return 1
+    } else if (x == 2) {
+        return 1
+    } else {
+        return fib(x - 1) + fib(x - 2)
+    }
+}
+
+function getRectangleHelper(coords: coord[], table: coordTable): rectangle[] {
+    var rectangles: rectangle[] = []
+
+    for(let coord1 of coords) {
+        for(let coord2 of coords) {
+            //if the second coordinate is in the top right quadrant of the first cooordinate
+            if(coord2[1] > coord1[1] && coord2[0] > coord1[0]) {
+                let topLeft: coord = [coord1[0], coord2[1]]
+                let bottomRight: coord = [coord2[0], coord1[1]]
+                if(getHash(topLeft) in table && getHash(bottomRight)) {
+                    rectangles.push(new rectangle([coord1, topLeft, coord2, bottomRight]))
+                }
+            }
+        }
+    }
+
+    return rectangles
+}
+
+function shiftLinkedList(head: linkedListNode, amount: number): linkedListNode {
+    let length = 1;
+    let tailNode = head;
+    while(tailNode.nextNode != undefined) {
+        length += 1
+        tailNode = tailNode.nextNode
+    }
+    
+    let offset = Math.abs(amount) % length
+    if (offset == 0) return head
+
+    let newTailIdx = length - offset - 1
+
+    let newTail = head
+    for(let i = 0; i < newTailIdx; i++) {
+        newTail = newTail.nextNode!
+    }
+    let nodeToReturn = newTail.nextNode!
+    newTail.nextNode = undefined
+    tailNode.nextNode = head
+    return nodeToReturn
+}
+
 function calculateFib() {
     const element = <HTMLInputElement> document.getElementById("fib");
     let fibToCalculate = parseInt(element.value)
@@ -61,17 +115,7 @@ function generateLinkedList(list: string[]): linkedListNode {
     return head
 }
 
-function fib(x: number): number {
-    if(x == 0) {
-        return 0
-    } else if (x == 1) {
-        return 1
-    } else if (x == 2) {
-        return 1
-    } else {
-        return fib(x - 1) + fib(x - 2)
-    }
-}
+
 
 
 type coord = [number, number];
@@ -105,47 +149,7 @@ function getRectangles(coords: coord[]): rectangle[] {
     return getRectangleHelper(coords, coordTable)
 }
 
-function shiftLinkedList(head: linkedListNode, amount: number): linkedListNode {
-    let length = 1;
-    let tailNode = head;
-    while(tailNode.nextNode != undefined) {
-        length += 1
-        tailNode = tailNode.nextNode
-    }
-    
-    let offset = Math.abs(amount) % length
-    if (offset == 0) return head
 
-    let newTailIdx = length - offset - 1
-
-    let newTail = head
-    for(let i = 0; i < newTailIdx; i++) {
-        newTail = newTail.nextNode!
-    }
-    let nodeToReturn = newTail.nextNode!
-    newTail.nextNode = undefined
-    tailNode.nextNode = head
-    return nodeToReturn
-}
-
-function getRectangleHelper(coords: coord[], table: coordTable): rectangle[] {
-    var rectangles: rectangle[] = []
-
-    for(let coord1 of coords) {
-        for(let coord2 of coords) {
-            //if the second coordinate is in the top right quadrant of the first cooordinate
-            if(coord2[1] > coord1[1] && coord2[0] > coord1[0]) {
-                let topLeft: coord = [coord1[0], coord2[1]]
-                let bottomRight: coord = [coord2[0], coord1[1]]
-                if(getHash(topLeft) in table && getHash(bottomRight)) {
-                    rectangles.push(new rectangle([coord1, topLeft, coord2, bottomRight]))
-                }
-            }
-        }
-    }
-
-    return rectangles
-}
 
 function createCoordTable(coords: coord[]): coordTable {
     var table: coordTable = {}
